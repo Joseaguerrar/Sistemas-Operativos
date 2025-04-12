@@ -1,7 +1,7 @@
 CXX=g++
 CXXFLAGS=-Wall -std=c++17
 TARGET=exec/main
-SRC=main.cpp utils.cpp
+SRC=main.cpp utils.cpp scheduler.cpp
 
 all: create_dir $(TARGET)
 
