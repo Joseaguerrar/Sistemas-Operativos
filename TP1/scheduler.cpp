@@ -1,6 +1,6 @@
 #include <iostream> 
 #include <cmath> //abs
-#include <algorithm> //std::min_element
+#include <algorithm> //sort, min_element
 #include <vector>
 
 #include"scheduler.hpp"
@@ -57,6 +57,72 @@ int sstf(const std::vector<int>& requests, int head) {
         std::cout << " -> " << current;
 
         pending.erase(next_it); // Eliminamos el atendido
+    }
+
+    std::cout << "\n";
+    return total;
+}
+
+int scan(const std::vector<int>& requests, int head, std::string direction, int maxCylinder) {
+    int total = 0;
+    int current = head;
+    std::vector<int> left, right;
+
+    for (int r : requests) {
+        if (r < current) {
+            left.push_back(r);
+        } else {
+            right.push_back(r);
+        }
+    }
+
+    std::sort(left.begin(), left.end());
+    std::sort(right.begin(), right.end());
+
+    std::cout << "Recorrido: " << current;
+
+    if (direction == "ASC") {
+        // Subiendo
+        for (int r : right) {
+            total += std::abs(r - current);
+            current = r;
+            std::cout << " -> " << current;
+        }
+
+        // Llegar al borde
+        if (current != maxCylinder) {
+            total += std::abs(maxCylinder - current);
+            current = maxCylinder;
+            std::cout << " -> " << current;
+        }
+
+        //Bajando
+        for(auto it = left.rbegin(); it != left.rend(); ++it) {
+            total += std::abs(*it - current);
+            current = *it;
+            std::cout << " -> " << current;
+        }
+    } else {
+        // Bajando
+        for(auto it = left.rbegin(); it != left.rend(); ++it) {
+            total += std::abs(*it - current);
+            current = *it;
+            std::cout << " -> " << current;
+        }
+
+        // Llegar al borde
+        if(current != 0) {
+            total += std::abs(0 - current);
+            current = 0;
+            std::cout << " -> " << current;
+        }
+
+        //Subiendo
+        for (int r : right) {
+            total += std::abs(r - current);
+            current = r;
+            std::cout << " -> " << current;
+        }
     }
 
     std::cout << "\n";
