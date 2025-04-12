@@ -33,7 +33,11 @@ int main() {
 
     std::cout << "================= SCAN =================\n";
     int total_scan = scan(requests, head, direction, 199); // 199 es maxCylinder (puedes cambiarlo)
-    std::cout << "Total del recorrido SCAN: " << total_scan << "\n";
+    std::cout << "Total del recorrido SCAN: " << total_scan << "\n\n";
+
+    std::cout << "================= C-SCAN =================\n";
+    int total_c_scan = c_scan(requests, head, direction, 199);
+    std::cout << "Total del recorrido C-SCAN: " << total_c_scan << "\n\n";
 
     return 0;
 }
