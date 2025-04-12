@@ -17,23 +17,19 @@ int main() {
     int head = tokens.size() > 2 ? parseHead(tokens[2]) : 0;
     std::string direction = tokens.size() > 3 ? parseDirection(tokens[3]) : "ASC";
 
-    std::cout << "Algoritmo: " << algorithm << "\n";
+    std::cout << "Entrada: " << input << "\n";
     std::cout << "Head inicial: " << head << "\n";
-    std::cout << "Dirección: " << direction << "\n";
     std::cout << "Requests: ";
     for (auto r : requests) std::cout << r << " ";
-    std::cout << "\n";
+    std::cout << "\n\n";
 
-    int total = 0;
+    std::cout << "================= FCFS =================\n";
+    int total_fcfs = fcfs(requests, head);
+    std::cout << "Total del recorrido FCFS: " << total_fcfs << "\n\n";
 
-    if(algorithm == "FCFS") {
-        total = fcfs(requests, head);
-    } else {
-        std::cerr << "Algoritmo no implementado todavía\n";
-        return 1;
-    }
-
-    std::cout << "Total del recorrido: " << total << "\n";
+    std::cout << "================= SSTF =================\n";
+    int total_sstf = sstf(requests, head);
+    std::cout << "Total del recorrido SSTF: " << total_sstf << "\n";
 
     return 0;
 }
