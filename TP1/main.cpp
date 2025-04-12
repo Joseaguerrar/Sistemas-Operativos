@@ -3,7 +3,7 @@
 #include "scheduler.hpp"
 
 int main() {
-    std::string input = "98, 183, 37, 122, 14, 124, 65, 67 | FCFS | Head:53 | ASC";
+    std::string input = "98, 183, 37, 122, 14, 124, 65, 67 | SCAN | Head:53 | ASC";
 
     auto tokens = split(input, '|');
 
@@ -29,7 +29,11 @@ int main() {
 
     std::cout << "================= SSTF =================\n";
     int total_sstf = sstf(requests, head);
-    std::cout << "Total del recorrido SSTF: " << total_sstf << "\n";
+    std::cout << "Total del recorrido SSTF: " << total_sstf << "\n\n";
+
+    std::cout << "================= SCAN =================\n";
+    int total_scan = scan(requests, head, direction, 199); // 199 es maxCylinder (puedes cambiarlo)
+    std::cout << "Total del recorrido SCAN: " << total_scan << "\n";
 
     return 0;
 }
