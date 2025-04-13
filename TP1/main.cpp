@@ -39,5 +39,9 @@ int main() {
     int total_c_scan = c_scan(requests, head, direction, 199);
     std::cout << "Total del recorrido C-SCAN: " << total_c_scan << "\n\n";
 
+    std::cout << "================= look ================\n";
+    int total_look = look(requests, head, direction);
+    std::cout << "Total del recorrido look: " << total_look << "\n\n";
+
     return 0;
 }
