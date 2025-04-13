@@ -203,3 +203,53 @@ int c_scan(const std::vector<int>& requests, int head, std::string direction, in
     std::cout << "\n";
     return total;
 }
+
+int look(const std::vector<int>& requests, int head, std::string direction) {
+    int total = 0;
+    int current = head;
+
+    std::vector<int> left, right;
+    for (int r : requests) {
+        if (r < current) {
+            left.push_back(r);
+        } else {
+            right.push_back(r);
+        }
+    }
+    std::sort(left.begin(), left.end());
+    std::sort(right.begin(), right.end());
+
+    std::cout << "Recorrido: " << current;
+
+    if (direction == "ASC") {
+        // Sube
+        for (int r : right) {
+            total += std::abs(r - current);
+            current = r;
+            std::cout << " -> " << current;
+        }
+
+        // Baja
+        for (auto it = left.rbegin(); it != left.rend(); ++it) {
+            total += std::abs(*it - current);
+            current = *it;
+            std::cout << " -> " << current;
+        }
+    } else {
+        // Baja
+        for (auto it = left.rbegin(); it != left.rend(); ++it) {
+            total += std::abs(*it - current);
+            current = *it;
+            std::cout << " -> " << current;
+        }
+
+        // Sube
+        for (int r : right) {
+            total += std::abs(r - current);
+            current = r;
+            std::cout << " -> " << current;
+        }
+    }
+    std::cout << "\n";
+    return total;
+}
