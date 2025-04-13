@@ -45,7 +45,7 @@ Para compilar y correr el programa se deben ejecutar los siguientes comandos:
 
 Cuando el programa se ejecute, solicitará la entrada para realizar la simulación. En la siguiente sección se proveen distintos casos de prueba válidos, incompletos e inválidos para probar el programa.  
 Se debe copiar el texto dentro de la columna "Entrada" de cada tabla (quitando los `\` en caso de estar viendo el README puro) y pegarlo cuando el programa solicite la entrada.  
-El programa debe devolver el resultado esperado dependiendo del caso de prueba.
+El programa debe devolver el resultado esperado según el caso de prueba.
 
 # Casos de Prueba
 
@@ -83,14 +83,29 @@ Ranking esperado (DESC):
 ### Casos de Entradas Incompletas / Parciales
 | Caso | Entrada | Resultado esperado |
 | --- | --- | --- |
-| Menos de 2 argumentos |	98, 183, 37	| Error: Entrada inválida |
-| Solo requests + algoritmo |	98, 183, 37 \| FCFS	| Total de cilindros recorridos con FCFS: 329 (Ejecuta con Head = 0 y Dirección = ASC) |
+| Menos de 2 argumentos | 98, 183, 37 | Error: Entrada inválida |
+| Solo requests + algoritmo | 98, 183, 37 \| FCFS | Total de cilindros recorridos con FCFS: 329 (Ejecuta con Head = 0 y Dirección = ASC) |
 | Tres argumentos (sin dirección) |	98, 183, 37 \| FCFS \| Head:50 | Total de cilindros recorridos con FCFS: 279 (Ejecuta con Dirección = ASC) |
-| Cuatro argumentos válidos |	98, 183, 37 \| FCFS \| Head:50 \| ASC	| Total de cilindros recorridos con FCFS: 279 (Información completa) |
+| Cuatro argumentos válidos | 98, 183, 37 \| FCFS \| Head:50 \| ASC | Total de cilindros recorridos con FCFS: 279 (Información completa) |
 
 ### Casos Inválidos
 | Caso | Entrada | Resultado esperado |
 | --- | --- | --- |
-| Algoritmo no válido	| 98, 183, 37 \| XYZ \| Head:50 \| ASC | Algoritmo no reconocido: XYZ |
+| Algoritmo no válido | 98, 183, 37 \| XYZ \| Head:50 \| ASC | Algoritmo no reconocido: XYZ |
 | Dirección inválida | 98, 183, 37 \| SCAN \| Head:50 \| UP | Dirección inválida: 'UP'. Usando dirección por defecto: ASC |
 | Entrada sin estructura | Blahblahbla | Error: Entrada inválida |
+
+# Imágenes de Resultados
+Se mostrarán los resultados esperados del programa al ejecutar los casos de prueba en Ubuntu, con Dirección = ASC.
+
+### Algoritmos
+![FCFS-SSTF](Images/FCFS-SSTF.png)
+![SCAN-C-SCAN](Images/SCAN-C-SCAN.png)
+![LOOK-C-LOOK](Images/LOOK-C-LOOK.png)
+![ALL](Images/ALL.png)
+
+### Entradas Incompletas
+![Entrada-Incompleta](Images/Entrada-Incompleta.png)
+
+### Entradas Inválidas
+![Entrada-Inválida](Images/Entrada-Inválida.png)
