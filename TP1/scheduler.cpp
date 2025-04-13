@@ -1,9 +1,9 @@
-#include <iostream> 
-#include <cmath> //abs
-#include <algorithm> //sort, min_element
+#include <iostream>
+#include <cmath>  // abs
+#include <algorithm>  // sort, min_element
 #include <vector>
 
-#include"scheduler.hpp"
+#include "scheduler.hpp"
 
 /**
  * Simula el algoritmo FCFS (First Come First Served).
@@ -17,7 +17,7 @@ int fcfs(const std::vector<int>& requests, int head) {
     int total = 0;
     int current = head;
 
-    std::cout << "Recorrido: " << current;
+    std::cout << "Recorrido FCFS: " << current;
 
     for (int next : requests) {
         total += std::abs(next - current);
@@ -43,7 +43,7 @@ int sstf(const std::vector<int>& requests, int head) {
     int current = head;
     std::vector<int> pending = requests; // Copia de los requests
 
-    std::cout << "Recorrido: " << current;
+    std::cout << "Recorrido SSTF: " << current;
 
     while (!pending.empty()) {
         auto next_it = std::min_element(pending.begin(), pending.end(),
@@ -56,7 +56,7 @@ int sstf(const std::vector<int>& requests, int head) {
         current = next;
         std::cout << " -> " << current;
 
-        pending.erase(next_it); // Eliminamos el atendido
+        pending.erase(next_it);  // Eliminamos el atendido
     }
 
     std::cout << "\n";
@@ -79,7 +79,7 @@ int scan(const std::vector<int>& requests, int head, std::string direction, int 
     std::sort(left.begin(), left.end());
     std::sort(right.begin(), right.end());
 
-    std::cout << "Recorrido: " << current;
+    std::cout << "Recorrido Scan: " << current;
 
     if (direction == "ASC") {
         // Subiendo
@@ -145,7 +145,7 @@ int c_scan(const std::vector<int>& requests, int head, std::string direction, in
     std::sort(left.begin(), left.end());
     std::sort(right.begin(), right.end());
 
-    std::cout << "Recorrido: " << current;
+    std::cout << "Recorrido C-Scan: " << current;
 
     if (direction == "ASC") {
         // Subiendo
@@ -219,7 +219,7 @@ int look(const std::vector<int>& requests, int head, std::string direction) {
     std::sort(left.begin(), left.end());
     std::sort(right.begin(), right.end());
 
-    std::cout << "Recorrido: " << current;
+    std::cout << "Recorrido Look: " << current;
 
     if (direction == "ASC") {
         // Sube
@@ -270,7 +270,7 @@ int c_look(const std::vector<int>& requests, int head, std::string direction) {
     std::sort(left.begin(), left.end());
     std::sort(right.begin(), right.end());
 
-    std::cout << "Recorrido: " << current;
+    std::cout << "Recorrido C-Look: " << current;
 
     if (direction == "ASC") {
         // Sube
@@ -318,6 +318,4 @@ int c_look(const std::vector<int>& requests, int head, std::string direction) {
     }
     std::cout << "\n";
     return total;
-}  
-        
-        
+}

@@ -1,9 +1,15 @@
 #include <iostream>
+#include <map>  // Para el ranking
+#include <algorithm>  // sort
+
 #include "utils.hpp"
 #include "scheduler.hpp"
 
 int main() {
-    std::string input = "98, 183, 37, 122, 14, 124, 65, 67 | SCAN | Head:53 | ASC";
+    std::string input;
+    std::cout << "Ingrese la entrada como el siguiente ejemplo: "
+        "98, 183, 37, 122, 14, 124, 65, 67 | SCAN | Head:53 | ASC\n";
+    std::getline(std::cin, input);
 
     auto tokens = split(input, '|');
 
@@ -23,29 +29,54 @@ int main() {
     for (auto r : requests) std::cout << r << " ";
     std::cout << "\n\n";
 
-    std::cout << "================= FCFS =================\n";
-    int total_fcfs = fcfs(requests, head);
-    std::cout << "Total del recorrido FCFS: " << total_fcfs << "\n\n";
+    if(algorithm == "FCFS"){
+        std::cout << "================= FCFS =================\n";
+        int total_fcfs = fcfs(requests, head);
+        std::cout << "Total del recorrido FCFS: " << total_fcfs << "\n\n";
+    } else if(algorithm == "SSTF") {
+        std::cout << "================= SSTF =================\n";
+        int total_sstf = sstf(requests, head);
+        std::cout << "Total del recorrido SSTF: " << total_sstf << "\n\n";
+    } else if(algorithm == "SCAN") {
+        std::cout << "================= Scan =================\n";
+        int total_scan = scan(requests, head, direction, 199);  // 199 es maxCylinder (puede cambiarlo)
+        std::cout << "Total del recorrido Scan: " << total_scan << "\n\n";
+    } else if(algorithm == "C-SCAN") {
+        std::cout << "================= C-Scan =================\n";
+        int total_c_scan = c_scan(requests, head, direction, 199);
+        std::cout << "Total del recorrido C-Scan: " << total_c_scan << "\n\n";
+    } else if(algorithm == "LOOK") {
+        std::cout << "================= Look ================\n";
+        int total_look = look(requests, head, direction);
+        std::cout << "Total del recorrido Look: " << total_look << "\n\n";
+    } else if(algorithm == "C-LOOK") {
+        std::cout << "================= C-Look ================\n";
+        int total_c_look = c_look(requests, head, direction);
+        std::cout << "Total del recorrido C-Look: " << total_c_look << "\n\n";
+    } else if(algorithm == "ALL") {
+        std::map<std::string, int> results;
 
-    std::cout << "================= SSTF =================\n";
-    int total_sstf = sstf(requests, head);
-    std::cout << "Total del recorrido SSTF: " << total_sstf << "\n\n";
+        results["FCFS"] = fcfs(requests, head);
+        results["SSTF"] = sstf(requests, head);
+        results["SCAN"] = scan(requests, head, direction, 199);
+        results["C-SCAN"] = c_scan(requests, head, direction, 199);
+        results["LOOK"] = look(requests, head, direction);
+        results["C-LOOK"] = c_look(requests, head, direction);
 
-    std::cout << "================= SCAN =================\n";
-    int total_scan = scan(requests, head, direction, 199); // 199 es maxCylinder (puede cambiarlo)
-    std::cout << "Total del recorrido SCAN: " << total_scan << "\n\n";
+        std::vector<std::pair<std::string, int>> ranking(results.begin(), results.end());
+        std::sort(ranking.begin(), ranking.end(), [](auto& a, auto& b) {
+            return a.second < b.second;
+        });
 
-    std::cout << "================= C-SCAN =================\n";
-    int total_c_scan = c_scan(requests, head, direction, 199);
-    std::cout << "Total del recorrido C-SCAN: " << total_c_scan << "\n\n";
+        std::cout << "\n================= Ranking de todos los algoritmos ================\n";
+        for (const auto& [nombre, recorrido] : ranking) {
+            std::cout << nombre << " -> " << recorrido << " cilindros\n";
+        }
 
-    std::cout << "================= look ================\n";
-    int total_look = look(requests, head, direction);
-    std::cout << "Total del recorrido look: " << total_look << "\n\n";
-
-    std::cout << "================= C-look ================\n";
-    int total_c_look = c_look(requests, head, direction);
-    std::cout << "Total del recorrido C-look: " << total_c_look << "\n\n";
+    } else {
+        std::cerr << "Algoritmo no reconocido: " << algorithm << "\n";
+        return 1;
+    }
 
     return 0;
 }

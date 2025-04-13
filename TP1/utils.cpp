@@ -1,8 +1,9 @@
-#include "utils.hpp"
 #include <sstream>
 #include <algorithm>
 #include <cctype>
 #include <stdexcept>
+
+#include "utils.hpp"
 
 /**
  * Divide un string en un vector de strings utilizando un delimitador específico.
