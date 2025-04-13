@@ -32,7 +32,7 @@ int main() {
     std::cout << "Total del recorrido SSTF: " << total_sstf << "\n\n";
 
     std::cout << "================= SCAN =================\n";
-    int total_scan = scan(requests, head, direction, 199); // 199 es maxCylinder (puedes cambiarlo)
+    int total_scan = scan(requests, head, direction, 199); // 199 es maxCylinder (puede cambiarlo)
     std::cout << "Total del recorrido SCAN: " << total_scan << "\n\n";
 
     std::cout << "================= C-SCAN =================\n";
