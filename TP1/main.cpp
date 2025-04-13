@@ -43,5 +43,9 @@ int main() {
     int total_look = look(requests, head, direction);
     std::cout << "Total del recorrido look: " << total_look << "\n\n";
 
+    std::cout << "================= C-look ================\n";
+    int total_c_look = c_look(requests, head, direction);
+    std::cout << "Total del recorrido C-look: " << total_c_look << "\n\n";
+
     return 0;
 }
