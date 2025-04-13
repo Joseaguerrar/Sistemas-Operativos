@@ -44,7 +44,7 @@ Para compilar y correr el programa se deben ejecutar los siguientes comandos:
     make run
 
 Cuando el programa se ejecute, solicitará la entrada para realizar la simulación. En la siguiente sección se proveen distintos casos de prueba válidos, incompletos e inválidos para probar el programa.  
-Se debe copiar el texto dentro de la columna "Entrada" de cada tabla y pegarlo cuando el programa solicite la entrada.  
+Se debe copiar el texto dentro de la columna "Entrada" de cada tabla (quitando los `\` en caso de estar viendo el README puro) y pegarlo cuando el programa solicite la entrada.  
 El programa debe devolver el resultado esperado dependiendo del caso de prueba.
 
 # Casos de Prueba
@@ -52,36 +52,45 @@ El programa debe devolver el resultado esperado dependiendo del caso de prueba.
 ### Casos Válidos por Algoritmo
 | Caso | Entrada | Resultado esperado |
 | --- | --- | --- |
-| FCFS | 98, 183, 37, 122, 14, 124, 65, 67 \| FCFS \| Head:53 \| ASC | . |
-| SSTF | 98, 183, 37, 122, 14, 124, 65, 67 \| SSTF \| Head:53 \| ASC | . |
-| SCAN (ASC) | 98, 183, 37, 122, 14, 124, 65, 67 \| SCAN \| Head:53 \| ASC | . |
-| SCAN (DESC) | 98, 183, 37, 122, 14, 124, 65, 67 \| SCAN \| Head:53 \| DESC | . |
-| C-SCAN (ASC) | 98, 183, 37, 122, 14, 124, 65, 67 \| C-SCAN \| Head:53 \| ASC | . |
-| C-SCAN (DESC) | 98, 183, 37, 122, 14, 124, 65, 67 \| C-SCAN \| Head:53 \| DESC | . |
-| LOOK (ASC) | 98, 183, 37, 122, 14, 124, 65, 67 \| LOOK \| Head:53 \| ASC | . |
-| LOOK (DESC) | 98, 183, 37, 122, 14, 124, 65, 67 \| LOOK \| Head:53 \| DESC | . |
-| C-LOOK (ASC) | 98, 183, 37, 122, 14, 124, 65, 67 \| C-LOOK \| Head:53 \| ASC | . |
-| C-LOOK (DESC) | 98, 183, 37, 122, 14, 124, 65, 67 \| C-LOOK \| Head:53 \| DESC | . |
+| FCFS | 98, 183, 37, 122, 14, 124, 65, 67 \| FCFS \| Head:53 \| ASC | Total de cilindros recorridos con FCFS: 640 |
+| SSTF | 98, 183, 37, 122, 14, 124, 65, 67 \| SSTF \| Head:53 \| ASC | Total de cilindros recorridos con SSTF: 236 |
+| SCAN (ASC) | 98, 183, 37, 122, 14, 124, 65, 67 \| SCAN \| Head:53 \| ASC | Total de cilindros recorridos con Scan: 331 |
+| SCAN (DESC) | 98, 183, 37, 122, 14, 124, 65, 67 \| SCAN \| Head:53 \| DESC | Total de cilindros recorridos con Scan: 236 |
+| C-SCAN (ASC) | 98, 183, 37, 122, 14, 124, 65, 67 \| C-SCAN \| Head:53 \| ASC | Total de cilindros recorridos con C-Scan: 382 |
+| C-SCAN (DESC) | 98, 183, 37, 122, 14, 124, 65, 67 \| C-SCAN \| Head:53 \| DESC | Total de cilindros recorridos con C-Scan: 386 |
+| LOOK (ASC) | 98, 183, 37, 122, 14, 124, 65, 67 \| LOOK \| Head:53 \| ASC | Total de cilindros recorridos con Look: 299 |
+| LOOK (DESC) | 98, 183, 37, 122, 14, 124, 65, 67 \| LOOK \| Head:53 \| DESC | Total de cilindros recorridos con Look: 208 |
+| C-LOOK (ASC) | 98, 183, 37, 122, 14, 124, 65, 67 \| C-LOOK \| Head:53 \| ASC | Total de cilindros recorridos con C-Look: 322 |
+| C-LOOK (DESC) | 98, 183, 37, 122, 14, 124, 65, 67 \| C-LOOK \| Head:53 \| DESC | Total de cilindros recorridos con C-Look: 326 |
 | ALL (Ranking) | 98, 183, 37, 122, 14, 124, 65, 67 \| ALL \| Head:53 \| ASC | ---> |
-Ranking esperado:
-1. _____
-2. _____
-3. _____
-4. _____
-5. _____
-6. _____
+| ALL (Ranking) | 98, 183, 37, 122, 14, 124, 65, 67 \| ALL \| Head:53 \| DESC | ---> |
+Ranking esperado (ASC):
+1. SSTF -> 236 cilindros
+2. LOOK -> 299 cilindros
+3. C-LOOK -> 322 cilindros
+4. SCAN -> 331 cilindros
+5. C-SCAN -> 382 cilindros
+6. FCFS -> 640 cilindros
+
+Ranking esperado (DESC):
+1. LOOK -> 208 cilindros
+2. SCAN -> 236 cilindros
+3. SSTF -> 236 cilindros
+4. C-LOOK -> 326 cilindros
+5. C-SCAN -> 386 cilindros
+6. FCFS -> 640 cilindros
 
 ### Casos de Entradas Incompletas / Parciales
 | Caso | Entrada | Resultado esperado |
 | --- | --- | --- |
 | Menos de 2 argumentos |	98, 183, 37	| Error: Entrada inválida |
-| Solo requests + algoritmo |	98, 183, 37 \| FCFS	| Ejecuta con Head = 0 y Dirección = ASC |
-| Tres argumentos (sin dirección) |	98, 183, 37 \| FCFS \| Head:50 | Ejecuta con Dirección = ASC |
-| Cuatro argumentos válidos |	98, 183, 37 \| FCFS \| Head:50 \| ASC	| . |
+| Solo requests + algoritmo |	98, 183, 37 \| FCFS	| Total de cilindros recorridos con FCFS: 329 (Ejecuta con Head = 0 y Dirección = ASC) |
+| Tres argumentos (sin dirección) |	98, 183, 37 \| FCFS \| Head:50 | Total de cilindros recorridos con FCFS: 279 (Ejecuta con Dirección = ASC) |
+| Cuatro argumentos válidos |	98, 183, 37 \| FCFS \| Head:50 \| ASC	| Total de cilindros recorridos con FCFS: 279 (Información completa) |
 
 ### Casos Inválidos
 | Caso | Entrada | Resultado esperado |
 | --- | --- | --- |
 | Algoritmo no válido	| 98, 183, 37 \| XYZ \| Head:50 \| ASC | Algoritmo no reconocido: XYZ |
-| Dirección inválida | 98, 183, 37 \| SCAN \| Head:50 \| UP | Advertencia: Dirección no válida, se usará ASC por defecto |
+| Dirección inválida | 98, 183, 37 \| SCAN \| Head:50 \| UP | Dirección inválida: 'UP'. Usando dirección por defecto: ASC |
 | Entrada sin estructura | Blahblahbla | Error: Entrada inválida |

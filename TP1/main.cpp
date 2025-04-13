@@ -60,11 +60,11 @@ int main() {
         int total_c_scan = c_scan(requests, head, direction, 199);
         std::cout << "Total de cilindros recorridos con C-Scan: " << total_c_scan << "\n\n";
     } else if (algorithm == "LOOK") {
-        std::cout << "================= Look ================\n";
+        std::cout << "================= Look =================\n";
         int total_look = look(requests, head, direction);
         std::cout << "Total de cilindros recorridos con Look: " << total_look << "\n\n";
     } else if (algorithm == "C-LOOK") {
-        std::cout << "================= C-Look ================\n";
+        std::cout << "================= C-Look =================\n";
         int total_c_look = c_look(requests, head, direction);
         std::cout << "Total de cilindros recorridos con C-Look: " << total_c_look << "\n\n";
     } else if (algorithm == "ALL") {
@@ -84,9 +84,11 @@ int main() {
             return a.second < b.second;
         });
 
-        std::cout << "\n================= Ranking de todos los algoritmos ================\n";
+        std::cout << "\n================= Ranking de todos los algoritmos =================\n";
+        int rankingPos = 1;
         for (const auto& [nombre, recorrido] : ranking) {
-            std::cout << nombre << " -> " << recorrido << " cilindros\n";
+            std::cout << rankingPos << ". " << nombre << " -> " << recorrido << " cilindros\n";
+            rankingPos++;
         }
 
     } else {
