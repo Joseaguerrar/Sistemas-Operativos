@@ -23,6 +23,11 @@ int main() {
     auto requests = parseRequests(tokens[0]);
     auto algorithm = toUpper(tokens[1]);
     int head = tokens.size() > 2 ? parseHead(tokens[2]) : 0;
+    if (head < 0) {
+        std::cerr << "\nError: Posición de cabeza inválida\n";
+        std::cout << "Usando cabeza por defecto: 0\n";
+        head = 0;
+    }
     std::string direction = "ASC";
     if (tokens.size() > 3) {
         direction = parseDirection(tokens[3]);
