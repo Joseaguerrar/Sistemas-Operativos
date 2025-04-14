@@ -20,7 +20,7 @@ sudo dnf install gcc-c++
 ```
 
 ### Verificación de versión:
-Una vez instalado, puedes verificar que tienes soporte para C++17 ejecutando:
+Una vez instalado, puede verificar que tiene soporte para C++17 ejecutando:
 
 ```bash
 g++ --version
