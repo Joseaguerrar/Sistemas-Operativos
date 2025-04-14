@@ -4,7 +4,29 @@
 
 # Visión General del Funcionamiento del Programa
 Este programa simula el comportamiento de diferentes algoritmos de planificación de discos, utilizando como entrada una lista de peticiones de cilindros y otros parámetros que definen cómo debe operar el algoritmo. El objetivo principal es calcular y mostrar el recorrido total de cilindros que realiza la cabeza del disco al atender las solicitudes, según el algoritmo seleccionado.  
-El programa utiliza la versión estándar de C++17, y solo requiere el compilador g++, que ya viene instalado por defecto en muchas distribuciones como Ubuntu o Fedora, o puede instalarse fácilmente desde los repositorios oficiales.
+El programa utiliza la versión estándar de C++17, y solo requiere el compilador g++, que ya viene instalado por defecto en muchas distribuciones como Ubuntu o Fedora, puede instalarse fácilmente desde los repositorios oficiales o puede instalarse fácilmente ejecutando los siguientes comandos en una terminal:
+
+### Instalación en distribuciones basadas en Debian/Ubuntu:
+
+```bash
+sudo apt update
+sudo apt install g++
+```
+
+### Instalación en distribuciones basadas en Fedora:
+
+```bash
+sudo dnf install gcc-c++
+```
+
+### Verificación de versión:
+Una vez instalado, puedes verificar que tienes soporte para C++17 ejecutando:
+
+```bash
+g++ --version
+```
+
+Debe mostrar una versión igual o superior a 7.x para garantizar compatibilidad con C++17.
 
 ### Estructura de la Entrada
 La entrada del usuario debe seguir el siguiente formato:
