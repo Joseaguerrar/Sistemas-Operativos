@@ -6,11 +6,11 @@
 #include "scheduler.hpp"
 
 /**
- * Simula el algoritmo FCFS (First Come First Served).
- * Atiende las peticiones en el orden que llegan.
+ * Ejecuta el algoritmo FCFS (First Come First Served).
+ * Atiende las peticiones en el orden en que fueron solicitadas.
  * 
- * @param requests Vector con los cilindros a visitar.
- * @param head Posición inicial de la cabeza.
+ * @param requests Vector de cilindros a atender.
+ * @param head Posición inicial de la cabeza de lectura.
  * @return Total de cilindros recorridos.
  */
 int fcfs(const std::vector<int>& requests, int head) {
@@ -31,11 +31,11 @@ int fcfs(const std::vector<int>& requests, int head) {
 }
 
 /**
- * Simula el algoritmo SSTF (Shortest Seek Time First).
+ * Ejecuta el algoritmo SSTF (Shortest Seek Time First).
  * Atiende siempre la petición más cercana a la posición actual.
  * 
- * @param requests Vector con los cilindros a visitar.
- * @param head Posición inicial de la cabeza.
+ * @param requests Vector de cilindros a atender.
+ * @param head Posición inicial de la cabeza de lectura.
  * @return Total de cilindros recorridos.
  */
 int sstf(const std::vector<int>& requests, int head) {
@@ -64,14 +64,14 @@ int sstf(const std::vector<int>& requests, int head) {
 }
 
 /**
- * Simula el algoritmo SCAN (también conocido como el "ascensor").
- * La cabeza se mueve en una dirección hasta el final, atendiendo peticiones en su camino,
- * luego cambia de dirección y continúa atendiendo el resto.
- *
- * @param requests Vector con los cilindros a visitar.
- * @param head Posición inicial de la cabeza.
- * @param direction Dirección inicial del recorrido: "ASC" o "DESC".
- * @param maxCylinder Valor máximo del cilindro en el disco.
+ * Ejecuta el algoritmo SCAN (Elevator Algorithm).
+ * La cabeza se mueve en una dirección hasta el borde del disco o hasta completar las peticiones,
+ * luego cambia de dirección.
+ * 
+ * @param requests Vector de cilindros a atender.
+ * @param head Posición inicial de la cabeza de lectura.
+ * @param direction Dirección inicial del movimiento ("ASC" o "DESC").
+ * @param maxCylinder Número máximo de cilindros disponibles en el disco.
  * @return Total de cilindros recorridos.
  */
 int scan(const std::vector<int>& requests, int head, std::string direction, int maxCylinder) {
@@ -141,14 +141,13 @@ int scan(const std::vector<int>& requests, int head, std::string direction, int 
 }
 
 /**
- * Simula el algoritmo C-SCAN (Circular SCAN).
- * La cabeza se mueve en una dirección atendiendo peticiones y, al llegar al extremo,
- * salta al inicio (o al final) sin atender, y continúa en la misma dirección.
- *
- * @param requests Vector con los cilindros a visitar.
- * @param head Posición inicial de la cabeza.
- * @param direction Dirección inicial del recorrido: "ASC" o "DESC".
- * @param maxCylinder Valor máximo del cilindro en el disco.
+ * Ejecuta el algoritmo C-SCAN (Circular SCAN).
+ * La cabeza se mueve en una dirección hasta el borde del disco y luego vuelve al extremo opuesto sin atender peticiones.
+ * 
+ * @param requests Vector de cilindros a atender.
+ * @param head Posición inicial de la cabeza de lectura.
+ * @param direction Dirección inicial del movimiento ("ASC" o "DESC").
+ * @param maxCylinder Número máximo de cilindros disponibles en el disco.
  * @return Total de cilindros recorridos.
  */
 int c_scan(const std::vector<int>& requests, int head, std::string direction, int maxCylinder) {
@@ -227,13 +226,12 @@ int c_scan(const std::vector<int>& requests, int head, std::string direction, in
 }
 
 /**
- * Simula el algoritmo LOOK.
- * Similar a SCAN, pero en lugar de ir hasta el final del disco,
- * se detiene en el último cilindro solicitado en cada dirección.
- *
- * @param requests Vector con los cilindros a visitar.
- * @param head Posición inicial de la cabeza.
- * @param direction Dirección inicial del recorrido: "ASC" o "DESC".
+ * Ejecuta el algoritmo LOOK.
+ * Similar a SCAN pero la cabeza solo se mueve hasta la última petición en cada dirección, sin llegar al borde del disco.
+ * 
+ * @param requests Vector de cilindros a atender.
+ * @param head Posición inicial de la cabeza de lectura.
+ * @param direction Dirección inicial del movimiento ("ASC" o "DESC").
  * @return Total de cilindros recorridos.
  */
 int look(const std::vector<int>& requests, int head, std::string direction) {
@@ -287,13 +285,12 @@ int look(const std::vector<int>& requests, int head, std::string direction) {
 }
 
 /**
- * Simula el algoritmo C-LOOK (Circular LOOK).
- * Similar a C-SCAN, pero solo se mueve entre las peticiones,
- * saltando del último al primero sin ir a los extremos del disco.
- *
- * @param requests Vector con los cilindros a visitar.
- * @param head Posición inicial de la cabeza.
- * @param direction Dirección inicial del recorrido: "ASC" o "DESC".
+ * Ejecuta el algoritmo C-LOOK.
+ * Similar a C-SCAN pero la cabeza solo se mueve entre las peticiones, saltando del último al primero si es necesario.
+ * 
+ * @param requests Vector de cilindros a atender.
+ * @param head Posición inicial de la cabeza de lectura.
+ * @param direction Dirección inicial del movimiento ("ASC" o "DESC").
  * @return Total de cilindros recorridos.
  */
 int c_look(const std::vector<int>& requests, int head, std::string direction) {

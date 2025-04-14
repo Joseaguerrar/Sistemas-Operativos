@@ -3,7 +3,8 @@
 - ### Josué Torres Sibaja C37853
 
 # Visión General del Funcionamiento del Programa
-Este programa simula el comportamiento de diferentes algoritmos de planificación de discos, utilizando como entrada una lista de peticiones de cilindros y otros parámetros que definen cómo debe operar el algoritmo. El objetivo principal es calcular y mostrar el recorrido total de cilindros que realiza la cabeza del disco al atender las solicitudes, según el algoritmo seleccionado.
+Este programa simula el comportamiento de diferentes algoritmos de planificación de discos, utilizando como entrada una lista de peticiones de cilindros y otros parámetros que definen cómo debe operar el algoritmo. El objetivo principal es calcular y mostrar el recorrido total de cilindros que realiza la cabeza del disco al atender las solicitudes, según el algoritmo seleccionado.  
+El programa utiliza la versión estándar de C++17, y solo requiere el compilador g++, que ya viene instalado por defecto en muchas distribuciones como Ubuntu o Fedora, o puede instalarse fácilmente desde los repositorios oficiales.
 
 ### Estructura de la Entrada
 La entrada del usuario debe seguir el siguiente formato:
@@ -96,7 +97,7 @@ Ranking esperado (DESC):
 | Entrada sin estructura | Blahblahbla | Error: Entrada inválida |
 
 # Imágenes de Resultados
-Se mostrarán los resultados esperados del programa al ejecutar los casos de prueba en Ubuntu, con Dirección = ASC.
+A continuación se muestran los resultados esperados del programa al ejecutar los casos de prueba en Ubuntu, con Dirección = ASC.
 
 ### Algoritmos
 ![FCFS-SSTF](Images/FCFS-SSTF.png)

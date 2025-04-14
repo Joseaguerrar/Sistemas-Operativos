@@ -4,8 +4,7 @@
 #include <vector>
 #include <string>
 
-//Algoritmos a utilizar
-
+// Algoritmos a utilizar
 
 /**
  * Ejecuta el algoritmo FCFS (First Come First Served).
