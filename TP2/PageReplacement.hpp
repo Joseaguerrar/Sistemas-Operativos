@@ -3,8 +3,6 @@
 
 #include <vector>
 #include <string>
-#include <deque>
-#include <unordered_map>
 
 // Número de marcos por defecto
 const int DEFAULT_FRAME_COUNT = 4;
@@ -38,16 +36,13 @@ enum class ReplacementAlgorithm
     MFU
 };
 
-// Estructura principal para simular la memoria
+// Estructura principal para el simulador
 struct PageReplacementSimulator
 {
     int frameCount;
     ReplacementAlgorithm algorithm;
     std::vector<PageFrame> memory;
-    std::deque<int> accessSequence;     // Secuencia de solicitudes (sin modificar)
-    std::deque<bool> modificationFlags; // Marca si fue modificada (*)
-    std::vector<PageFrame> swapSpace;   // Simulación del swap
-    int clockHand = 0;                  // Para el algoritmo Clock
+    int clockHand = 0; // Para Clock
     int pageFaults = 0;
 
     PageReplacementSimulator(int count, ReplacementAlgorithm algo)
@@ -57,10 +52,13 @@ struct PageReplacementSimulator
 // Función para convertir string a ReplacementAlgorithm
 ReplacementAlgorithm parseAlgorithm(const std::string &name);
 
-// Función para parsear la entrada como cadena de acceso
-void parseAccessSequence(const std::string &input, std::deque<int> &sequence, std::deque<bool> &flags);
+// Función para parsear la secuencia de accesos (e.g. [1*,2,3])
+void parseAccessSequence(
+    const std::string &input,
+    std::vector<int> &pages,
+    std::vector<bool> &modifiedFlags);
 
-// Función para imprimir el estado actual de la memoria (para depuración)
+// Función para imprimir el estado actual de la memoria
 void printMemory(const std::vector<PageFrame> &memory);
 
 #endif // PAGE_REPLACEMENT_HPP
