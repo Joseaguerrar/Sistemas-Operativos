@@ -83,6 +83,116 @@ void runFIFO(PageReplacementSimulator &sim, const std::vector<int> &pages, const
 }
 
 /**
+ * @brief Simula el algoritmo de reemplazo de páginas Second Chance (FIFO + bit R).
+ *
+ * Utiliza una cola circular y el bit R para decidir si una página debe ser reemplazada
+ * o reinsertada al final con su bit R en 0.
+ *
+ * @param sim   Referencia al simulador con la memoria, contador de fallos, etc.
+ * @param pages Secuencia de números de páginas solicitadas.
+ * @param mods  Flags que indican si cada página fue modificada (*).
+ */
+void runSecondChance(PageReplacementSimulator &sim, const std::vector<int> &pages, const std::vector<bool> &mods)
+{
+    std::queue<int> fifoQueue; // Orden FIFO para candidatos
+    std::unordered_set<int> loadedPages;
+
+    // Prellenar cola si hay estado inicial para evitar errores
+    for (const auto &frame : sim.memory)
+    {
+        if (frame.pageNumber != -1)
+        {
+            fifoQueue.push(frame.pageNumber);
+            loadedPages.insert(frame.pageNumber);
+        }
+    }
+
+    for (size_t i = 0; i < pages.size(); ++i)
+    {
+        int page = pages[i];
+        bool modified = mods[i];
+        bool hit = false;
+
+        // Verificar si la página ya está cargada
+        for (auto &frame : sim.memory)
+        {
+            if (frame.pageNumber == page)
+            {
+                hit = true;
+                frame.bits.R = true;
+                if (modified)
+                    frame.bits.M = true;
+                break;
+            }
+        }
+
+        if (hit)
+            continue; // No hay fallo
+
+        // Fallo de página
+        sim.pageFaults++;
+
+        // Buscar marco libre
+        bool placed = false;
+        for (auto &frame : sim.memory)
+        {
+            if (frame.pageNumber == -1)
+            {
+                frame.pageNumber = page;
+                frame.bits = {true, modified, true};
+                fifoQueue.push(page);
+                loadedPages.insert(page);
+                placed = true;
+                break;
+            }
+        }
+
+        if (placed)
+            continue;
+
+        // No hay marcos libres: aplicar Second Chance
+        while (true)
+        {
+            if (fifoQueue.empty())
+            {
+                std::cerr << "Error: fifoQueue quedó vacía, posible corrupción de estado.\n";
+                std::exit(EXIT_FAILURE);
+            }
+            int candidate = fifoQueue.front();
+            fifoQueue.pop();
+
+            // Buscar el marco correspondiente al candidato
+            for (auto &frame : sim.memory)
+            {
+                if (frame.pageNumber == candidate)
+                {
+                    if (frame.bits.R)
+                    {
+                        frame.bits.R = false;      // Segunda oportunidad
+                        fifoQueue.push(candidate); // Lo movemos al final
+                    }
+                    else
+                    {
+                        // Reemplazo: quitar víctima
+                        loadedPages.erase(candidate);
+                        frame.pageNumber = page;
+                        frame.bits = {true, modified, true};
+                        fifoQueue.push(page);
+                        loadedPages.insert(page);
+                        break;
+                    }
+                    break;
+                }
+            }
+
+            // Salimos si ya insertamos la nueva página
+            if (loadedPages.count(page))
+                break;
+        }
+    }
+}
+
+/**
  * @brief Simula el algoritmo de reemplazo de páginas LRU (Least Recently Used).
  *
  * Este algoritmo reemplaza la página menos recientemente utilizada, usando un contador
