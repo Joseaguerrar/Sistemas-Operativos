@@ -2,6 +2,8 @@
 #include <unordered_set>
 #include <queue>
 #include <iostream>
+#include <cstdlib>
+#include <ctime>
 
 /**
  * Simula el algoritmo de reemplazo de páginas FIFO.
@@ -188,6 +190,119 @@ void runSecondChance(PageReplacementSimulator &sim, const std::vector<int> &page
             // Salimos si ya insertamos la nueva página
             if (loadedPages.count(page))
                 break;
+        }
+    }
+}
+
+/**
+ * @brief Simula el algoritmo NRU (Not Recently Used).
+ *
+ * Clasifica las páginas en cuatro clases basadas en los bits R (referenciado)
+ * y M (modificado). Al ocurrir un fallo de página, se selecciona aleatoriamente
+ * una página de la clase más baja disponible para su reemplazo. Periódicamente
+ * se reinician los bits R para simular el paso del tiempo.
+ *
+ * Clases:
+ *  - Clase 0: R = 0, M = 0  → mejor candidata
+ *  - Clase 1: R = 0, M = 1
+ *  - Clase 2: R = 1, M = 0
+ *  - Clase 3: R = 1, M = 1  → peor candidata
+ *
+ * @param sim   Referencia al simulador con marcos de página, contador de fallos, etc.
+ * @param pages Vector con la secuencia de páginas solicitadas.
+ * @param mods  Vector que indica si la página correspondiente fue modificada (con '*').
+ */
+void runNRU(PageReplacementSimulator &sim, const std::vector<int> &pages, const std::vector<bool> &mods)
+{
+    std::srand(std::time(nullptr)); // Semilla para selección aleatoria
+
+    for (size_t i = 0; i < pages.size(); ++i)
+    {
+        int page = pages[i];
+        bool modified = mods[i];
+        bool hit = false;
+
+        // Buscar si la página ya está en memoria
+        for (auto &frame : sim.memory)
+        {
+            if (frame.pageNumber == page)
+            {
+                // Página encontrada → hit
+                hit = true;
+                frame.bits.R = true; // Se marca como referenciada
+                if (modified)
+                    frame.bits.M = true; // Se marca como modificada si corresponde
+                break;
+            }
+        }
+
+        if (hit)
+            continue; // Si fue hit, pasamos al siguiente acceso
+
+        // Fallo de página
+        sim.pageFaults++;
+
+        // Buscar un marco libre
+        bool placed = false;
+        for (auto &frame : sim.memory)
+        {
+            if (frame.pageNumber == -1)
+            {
+                // Marco vacío → cargar página sin reemplazar
+                frame.pageNumber = page;
+                frame.bits = {true, modified, true};
+                frame.frequency = 1;
+                placed = true;
+                break;
+            }
+        }
+
+        if (placed)
+            continue; // Ya se colocó sin necesidad de reemplazo
+
+        // No hay marcos libres: clasificar páginas en clases NRU
+        std::vector<int> class0, class1, class2, class3;
+
+        for (size_t j = 0; j < sim.memory.size(); ++j)
+        {
+            const auto &frame = sim.memory[j];
+            bool R = frame.bits.R;
+            bool M = frame.bits.M;
+
+            if (!R && !M)
+                class0.push_back(j);
+            else if (!R && M)
+                class1.push_back(j);
+            else if (R && !M)
+                class2.push_back(j);
+            else
+                class3.push_back(j);
+        }
+
+        // Elegir clase con mayor prioridad disponible
+        std::vector<int> *victimClass = nullptr;
+        if (!class0.empty())
+            victimClass = &class0;
+        else if (!class1.empty())
+            victimClass = &class1;
+        else if (!class2.empty())
+            victimClass = &class2;
+        else
+            victimClass = &class3;
+
+        // Selección aleatoria dentro de la mejor clase encontrada
+        int victimIndex = (*victimClass)[std::rand() % victimClass->size()];
+
+        // 🔄 Reemplazar la página víctima
+        sim.memory[victimIndex].pageNumber = page;
+        sim.memory[victimIndex].bits = {true, modified, true};
+        sim.memory[victimIndex].frequency = 1;
+
+        // Simulación del tiempo: reinicio periódico del bit R (cada 5 accesos)
+        if (i % 5 == 0)
+        {
+            for (auto &frame : sim.memory)
+                frame.bits.R = false;
         }
     }
 }
