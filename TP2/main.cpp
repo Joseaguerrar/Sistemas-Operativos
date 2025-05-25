@@ -68,10 +68,14 @@ int main()
     // Ejecutar el algoritmo correspondiente
     if (algoritmo == ReplacementAlgorithm::FIFO)
         runFIFO(sim, paginas, modificadas);
-    else if (algoritmo == ReplacementAlgorithm::LRU)
-        runLRU(sim, paginas, modificadas);
     else if (algoritmo == ReplacementAlgorithm::SecondChance)
         runSecondChance(sim, paginas, modificadas);
+    else if (algoritmo == ReplacementAlgorithm::NRU)
+        runNRU(sim, paginas, modificadas);
+    else if (algoritmo == ReplacementAlgorithm::LRU)
+        runLRU(sim, paginas, modificadas);
+    else if (algoritmo == ReplacementAlgorithm::Clock)
+        runClock(sim, paginas, modificadas);
     else
     {
         std::cerr << "Error: Algoritmo no implementado todavía.\n";
