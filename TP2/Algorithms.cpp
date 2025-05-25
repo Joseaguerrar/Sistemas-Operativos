@@ -2,8 +2,6 @@
 #include <unordered_set>
 #include <queue>
 #include <iostream>
-#include <cstdlib>
-#include <ctime>
 
 /**
  * Simula el algoritmo de reemplazo de páginas FIFO.
@@ -195,12 +193,12 @@ void runSecondChance(PageReplacementSimulator &sim, const std::vector<int> &page
 }
 
 /**
- * @brief Simula el algoritmo NRU (Not Recently Used).
+ * @brief Simula el algoritmo NRU (Not Recently Used) de forma determinista.
  *
  * Clasifica las páginas en cuatro clases basadas en los bits R (referenciado)
- * y M (modificado). Al ocurrir un fallo de página, se selecciona aleatoriamente
- * una página de la clase más baja disponible para su reemplazo. Periódicamente
- * se reinician los bits R para simular el paso del tiempo.
+ * y M (modificado). Al ocurrir un fallo de página, se selecciona determinísticamente
+ * la primera página encontrada en la clase más baja disponible para su reemplazo.
+ * Periódicamente se reinician los bits R para simular el paso del tiempo.
  *
  * Clases:
  *  - Clase 0: R = 0, M = 0  → mejor candidata
@@ -214,8 +212,6 @@ void runSecondChance(PageReplacementSimulator &sim, const std::vector<int> &page
  */
 void runNRU(PageReplacementSimulator &sim, const std::vector<int> &pages, const std::vector<bool> &mods)
 {
-    std::srand(std::time(nullptr)); // Semilla para selección aleatoria
-
     for (size_t i = 0; i < pages.size(); ++i)
     {
         int page = pages[i];
@@ -290,16 +286,16 @@ void runNRU(PageReplacementSimulator &sim, const std::vector<int> &pages, const 
         else
             victimClass = &class3;
 
-        // Selección aleatoria dentro de la mejor clase encontrada
-        int victimIndex = (*victimClass)[std::rand() % victimClass->size()];
+        // Selección determinista: tomar el primer índice de la mejor clase
+        int victimIndex = (*victimClass)[0];
 
-        // 🔄 Reemplazar la página víctima
+        // Reemplazar la página víctima
         sim.memory[victimIndex].pageNumber = page;
         sim.memory[victimIndex].bits = {true, modified, true};
         sim.memory[victimIndex].frequency = 1;
 
         // Simulación del tiempo: reinicio periódico del bit R (cada 5 accesos)
-        if (i % 5 == 0)
+        if ((i + 1) % 5 == 0)
         {
             for (auto &frame : sim.memory)
                 frame.bits.R = false;
@@ -384,5 +380,90 @@ void runLRU(PageReplacementSimulator &sim, const std::vector<int> &pages, const 
         sim.memory[lruIndex].bits = {true, modified, true}; // Se actualiza el estado.
         sim.memory[lruIndex].timestamp = currentTime++;     // Nuevo acceso, nuevo timestamp.
         sim.memory[lruIndex].frequency = 1;                 // Reinicia frecuencia.
+    }
+}
+
+/**
+ * @brief Simula el algoritmo Clock (Reloj), variante eficiente de Second Chance.
+ *
+ * Usa un puntero circular (clock hand) para recorrer los marcos.
+ * Si la página apuntada tiene R=1, se le da una segunda oportunidad (R=0 y se avanza).
+ * Si tiene R=0, se reemplaza inmediatamente.
+ *
+ * @param sim   Referencia al simulador con marcos, contador de fallos, etc.
+ * @param pages Secuencia de páginas solicitadas.
+ * @param mods  Vector que indica si cada página fue modificada (*).
+ */
+void runClock(PageReplacementSimulator &sim, const std::vector<int> &pages, const std::vector<bool> &mods)
+{
+    // Asegurar que el puntero de reloj esté dentro de los límites
+    sim.clockHand %= sim.frameCount;
+
+    for (size_t i = 0; i < pages.size(); ++i)
+    {
+        int page = pages[i];     // Página solicitada en esta iteración
+        bool modified = mods[i]; // ¿La página fue modificada en este acceso?
+        bool hit = false;        // ¿La página ya estaba en memoria?
+
+        // Verificar si la página ya se encuentra en memoria (HIT)
+        for (auto &frame : sim.memory)
+        {
+            if (frame.pageNumber == page)
+            {
+                // La página ya está cargada
+                hit = true;
+                frame.bits.R = true; // Marcar como referenciada
+                if (modified)
+                    frame.bits.M = true; // Marcar como modificada si aplica
+                break;
+            }
+        }
+
+        if (hit)
+            continue; // No hay fallo, se continúa con el siguiente acceso
+
+        // Fallo de página: la página no estaba cargada
+        sim.pageFaults++;
+
+        // Buscar un marco libre
+        bool placed = false;
+        for (auto &frame : sim.memory)
+        {
+            if (frame.pageNumber == -1)
+            {
+                // Encontramos un marco libre → colocamos la nueva página aquí
+                frame.pageNumber = page;
+                frame.bits = {true, modified, true}; // R=1, M=modificado, V=1
+                placed = true;
+                break;
+            }
+        }
+
+        if (placed)
+            continue; // Se usó un marco libre, no se requiere reemplazo
+
+        // No hay marcos libres → aplicar algoritmo Clock
+        while (true)
+        {
+            // Obtener el marco apuntado por el reloj
+            PageFrame &candidate = sim.memory[sim.clockHand];
+
+            if (!candidate.bits.R)
+            {
+                // Si R=0 → no ha sido referenciada recientemente → reemplazar
+                candidate.pageNumber = page;
+                candidate.bits = {true, modified, true}; // Nuevo estado de la página cargada
+
+                // Avanzar el reloj para la siguiente iteración futura
+                sim.clockHand = (sim.clockHand + 1) % sim.frameCount;
+                break;
+            }
+            else
+            {
+                // Si R=1 → darle una segunda oportunidad
+                candidate.bits.R = false;                             // Limpiar R
+                sim.clockHand = (sim.clockHand + 1) % sim.frameCount; // Avanzar el puntero
+            }
+        }
     }
 }
