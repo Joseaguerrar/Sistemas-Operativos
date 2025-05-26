@@ -23,7 +23,10 @@ $(OBJDIR)/%.o: %.cpp
 	@mkdir -p $(OBJDIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+run: $(TARGET)
+	./$(TARGET)
+
 clean:
 	rm -rf $(OBJDIR)/*.o $(BINDIR)/*
 
-.PHONY: all clean
+.PHONY: all clean run
