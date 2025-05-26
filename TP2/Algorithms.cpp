@@ -2,6 +2,7 @@
 #include <unordered_set>
 #include <queue>
 #include <iostream>
+#include <climits>
 
 /**
  * Simula el algoritmo de reemplazo de páginas FIFO.
@@ -464,6 +465,146 @@ void runClock(PageReplacementSimulator &sim, const std::vector<int> &pages, cons
                 candidate.bits.R = false;                             // Limpiar R
                 sim.clockHand = (sim.clockHand + 1) % sim.frameCount; // Avanzar el puntero
             }
+        }
+    }
+}
+
+/**
+ * @brief Ejecuta el algoritmo de reemplazo de páginas LFU (Least Frequently Used).
+ *
+ * Este algoritmo selecciona para reemplazo el marco con la menor frecuencia de uso.
+ * En caso de empate en la frecuencia, se aplica desempate por orden de llegada (FIFO).
+ *
+ * @param sim   Referencia al simulador con marcos, contador de fallos, etc.
+ * @param pages Secuencia de páginas solicitadas.
+ * @param mods  Vector que indica si cada página fue modificada (*).
+ */
+void runLFU(PageReplacementSimulator &sim, const std::vector<int> &pages, const std::vector<bool> &mods) {
+    for (size_t i = 0; i < pages.size(); ++i) {
+        int page = pages[i];
+        bool modified = mods[i];
+        bool hit = false;
+        sim.globalTime++;  // Avanzar tiempo global
+
+        // Buscar si la página ya está cargada
+        for (auto &frame : sim.memory) {
+            if (frame.pageNumber == page) {
+                hit = true;
+                frame.bits.R = true;
+                if (modified)
+                    frame.bits.M = true;
+                frame.frequency++;  // Aumentar frecuencia
+                break;
+            }
+        }
+
+        if (hit)
+            continue;
+
+        // Fallo de página
+        sim.pageFaults++;
+
+        bool placed = false;
+        for (auto &frame : sim.memory) {
+            if (frame.pageNumber == -1) {
+                frame.pageNumber = page;
+                frame.bits = {true, modified, true};
+                frame.frequency = ++sim.globalFrequencies[page];
+                frame.timestamp = sim.globalTime;
+                placed = true;
+                break;
+            }
+        }
+
+        if (!placed) {
+            // Reemplazo LFU con desempate por timestamp (FIFO)
+            int minFreq = INT_MAX;
+            int oldestTime = INT_MAX;
+            int victimIndex = -1;
+
+            for (int j = 0; j < sim.frameCount; ++j) {
+                const auto &frame = sim.memory[j];
+                if (frame.frequency < minFreq || (frame.frequency == minFreq && frame.timestamp < oldestTime)) {
+                    minFreq = frame.frequency;
+                    oldestTime = frame.timestamp;
+                    victimIndex = j;
+                }
+            }
+
+            sim.memory[victimIndex].pageNumber = page;
+            sim.memory[victimIndex].bits = {true, modified, true};
+            sim.memory[victimIndex].frequency = ++sim.globalFrequencies[page];
+            sim.memory[victimIndex].timestamp = sim.globalTime;
+        }
+    }
+}
+
+/**
+ * @brief Ejecuta el algoritmo de reemplazo de páginas MFU (Most Frequently Used).
+ *
+ * Este algoritmo selecciona para reemplazo el marco con la mayor frecuencia de uso.
+ * En caso de empate en la frecuencia, se aplica desempate por orden de llegada (FIFO).
+ *
+ * @param sim   Referencia al simulador con marcos, contador de fallos, etc.
+ * @param pages Secuencia de páginas solicitadas.
+ * @param mods  Vector que indica si cada página fue modificada (*).
+ */
+void runMFU(PageReplacementSimulator &sim, const std::vector<int> &pages, const std::vector<bool> &mods) {
+    for (size_t i = 0; i < pages.size(); ++i) {
+        int page = pages[i];
+        bool modified = mods[i];
+        bool hit = false;
+        sim.globalTime++;  // Avanzar tiempo global
+
+        // Buscar si la página ya está cargada
+        for (auto &frame : sim.memory) {
+            if (frame.pageNumber == page) {
+                hit = true;
+                frame.bits.R = true;
+                if (modified)
+                    frame.bits.M = true;
+                frame.frequency++;  // Aumentar frecuencia
+                break;
+            }
+        }
+
+        if (hit)
+            continue;
+
+        // Fallo de página
+        sim.pageFaults++;
+
+        bool placed = false;
+        for (auto &frame : sim.memory) {
+            if (frame.pageNumber == -1) {
+                frame.pageNumber = page;
+                frame.bits = {true, modified, true};
+                frame.frequency = ++sim.globalFrequencies[page];
+                frame.timestamp = sim.globalTime;
+                placed = true;
+                break;
+            }
+        }
+
+        if (!placed) {
+            // Reemplazo MFU con desempate por timestamp (FIFO inverso)
+            int maxFreq = -1;
+            int oldestTime = INT_MAX;
+            int victimIndex = -1;
+
+            for (int j = 0; j < sim.frameCount; ++j) {
+                const auto &frame = sim.memory[j];
+                if (frame.frequency > maxFreq || (frame.frequency == maxFreq && frame.timestamp < oldestTime)) {
+                    maxFreq = frame.frequency;
+                    oldestTime = frame.timestamp;
+                    victimIndex = j;
+                }
+            }
+
+            sim.memory[victimIndex].pageNumber = page;
+            sim.memory[victimIndex].bits = {true, modified, true};
+            sim.memory[victimIndex].frequency = ++sim.globalFrequencies[page];
+            sim.memory[victimIndex].timestamp = sim.globalTime;
         }
     }
 }

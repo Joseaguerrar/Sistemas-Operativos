@@ -24,6 +24,8 @@ ReplacementAlgorithm parseAlgorithm(const std::string &name)
         return ReplacementAlgorithm::LFU;
     if (lower == "mfu")
         return ReplacementAlgorithm::MFU;
+    if (lower == "all")
+        return ReplacementAlgorithm::All;
 
     std::cerr << "Error: algoritmo desconocido: " << name << std::endl;
     std::exit(EXIT_FAILURE);
