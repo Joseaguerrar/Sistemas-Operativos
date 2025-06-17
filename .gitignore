@@ -1,4 +1,5 @@
 .vscode
-/exec
+exec/
+obj/
 *.o
 *.out
