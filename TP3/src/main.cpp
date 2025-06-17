@@ -41,16 +41,9 @@ int main() {
     std::vector<Process> copy3 = processes;
     std::vector<Process> copy4 = processes;
 
-    std::cout << "\nRunning FCFS...\n";
     fcfs(copy1);
-
-    std::cout << "\nRunning SJF...\n";
     sjf(copy2);
-
-    std::cout << "\nRunning Round Robin...\n";
     round_robin(copy3, 2);
-
-    std::cout << "\nRunning Priority Scheduling...\n";
     priority_scheduling(copy4);
   } else {
     std::cerr << "Unrecognized algorithm: " << algorithm << std::endl;
