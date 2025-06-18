@@ -8,7 +8,7 @@
  *
  * Example input: 5 | 10,1,2,1,3 | 3,1,4,5,2 | 0 | Priority
  *
- * Supported algorithms: FCFS, SJF, RR, Priority, ALL
+ * Supported algorithms: FCFS, SJF, RR, Priority, all
  */
 int main() {
   std::string input;
@@ -34,7 +34,7 @@ int main() {
     round_robin(processes, 2);
   } else if (algorithm == "Priority") {
     priority_scheduling(processes);
-  } else if (algorithm == "ALL") {
+  } else if (algorithm == "all") {
     // Make copies to preserve original input for each algorithm
     std::vector<Process> copy1 = processes;
     std::vector<Process> copy2 = processes;

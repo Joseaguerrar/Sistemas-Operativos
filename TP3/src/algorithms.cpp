@@ -49,41 +49,46 @@ void sjf(std::vector<Process> processes) {
   std::vector<Process> result;
   int current_time = 0;
   size_t completed = 0;
+  std::vector<bool> done(processes.size(), false);
   float total_waiting = 0, total_turnaround = 0;
 
-  // Repeat until all processes are completed
   while (completed < processes.size()) {
-    // Move all arrived processes to the ready queue
-    for (auto it = processes.begin(); it != processes.end();) {
-      if (it->arrival <= current_time) {
-        ready.push_back(*it);
-        it = processes.erase(it);
-      } else {
-        ++it;
+    // Add ready processes to the `ready` vector
+    ready.clear();
+    for (size_t i = 0; i < processes.size(); ++i) {
+      if (!done[i] && processes[i].arrival <= current_time) {
+        ready.push_back(processes[i]);
       }
     }
 
     if (!ready.empty()) {
-      // Pick the process with the shortest burst time
-      auto it = std::min_element(ready.begin(), ready.end(), [](const Process& a, const Process& b) {
+      // Choose the process with the lowest burst time
+      auto shortest_it = std::min_element(ready.begin(), ready.end(), [](const Process& a, const Process& b) {
         return a.burst_time < b.burst_time;
       });
 
-      Process p = *it;
-      ready.erase(it);
+      // Find the original index of the selected process
+      int pid = shortest_it->pid;
+      size_t idx = 0;
+      for (; idx < processes.size(); ++idx) {
+        if (processes[idx].pid == pid) break;
+      }
 
+      Process& p = processes[idx];
       p.start = current_time;
       p.end = p.start + p.burst_time;
-      p.turnaround_time = p.end - p.arrival;
       p.waiting_time = p.start - p.arrival;
+      p.turnaround_time = p.end - p.arrival;
 
       current_time = p.end;
       result.push_back(p);
+      done[idx] = true;
+      completed++;
+
       total_waiting += p.waiting_time;
       total_turnaround += p.turnaround_time;
-      completed++;
     } else {
-      // No process is ready, CPU idle
+      // If no process has arrived, advance time
       current_time++;
     }
   }
@@ -106,16 +111,18 @@ void sjf(std::vector<Process> processes) {
 }
 
 void round_robin(std::vector<Process> processes, int quantum) {
-  std::queue<Process> queue;
+  std::queue<int> queue;  // Only save PID
   int current_time = 0;
   float total_waiting = 0, total_turnaround = 0;
-  std::map<int, int> remaining_time;    // Remaining burst time per process
-  std::map<int, int> first_start_time;  // Time of first execution per process
+  std::map<int, int> remaining_time;
+  std::map<int, int> first_start_time;
+  std::map<int, Process> originals;  // To keep the original data
   std::vector<Process> result;
   size_t completed = 0;
 
-  // Initialize remaining time map
+  // Save original information and remaining times
   for (const auto& p : processes) {
+    originals[p.pid] = p;
     remaining_time[p.pid] = p.burst_time;
   }
 
@@ -126,44 +133,51 @@ void round_robin(std::vector<Process> processes, int quantum) {
 
   size_t index = 0;
 
-  // Main scheduling loop
-  while (completed < processes.size()) {
-    // Add all processes that have arrived up to current_time
-    while (index < processes.size() && processes[index].arrival <= current_time) {
-      queue.push(processes[index]);
-      index++;
-    }
+  // Add processes that arrive at 0
+  while (index < processes.size() && processes[index].arrival <= current_time) {
+    queue.push(processes[index].pid);
+    index++;
+  }
 
-    // CPU is idle
+  while (completed < processes.size()) {
     if (queue.empty()) {
       current_time++;
+      while (index < processes.size() && processes[index].arrival <= current_time) {
+        queue.push(processes[index].pid);
+        index++;
+      }
       continue;
     }
 
-    Process current = queue.front();
+    int pid = queue.front();
     queue.pop();
+    Process& current = originals[pid];
 
-    // Record the first time the process runs
-    if (first_start_time.count(current.pid) == 0)
-      first_start_time[current.pid] = current_time;
+    if (first_start_time.count(pid) == 0) {
+      first_start_time[pid] = current_time;
+    }
 
-    // Run the process for a time slice
-    int exec_time = std::min(quantum, remaining_time[current.pid]);
+    int exec_time = std::min(quantum, remaining_time[pid]);
     current_time += exec_time;
-    remaining_time[current.pid] -= exec_time;
+    remaining_time[pid] -= exec_time;
 
-    // Add newly arrived processes during this time slice
+    std::vector<int> during_slice;
+    std::vector<int> at_slice_end;
+
     while (index < processes.size() && processes[index].arrival <= current_time) {
-      queue.push(processes[index]);
+      if (processes[index].arrival < current_time)
+        during_slice.push_back(processes[index].pid);
+      else
+        at_slice_end.push_back(processes[index].pid);
       index++;
     }
 
-    // If the process has remaining time, enqueue again
-    if (remaining_time[current.pid] > 0) {
-      queue.push(current);
+    if (remaining_time[pid] > 0) {
+      for (int new_pid : during_slice) queue.push(new_pid);
+      queue.push(pid);
+      for (int new_pid : at_slice_end) queue.push(new_pid);
     } else {
-      completed++;
-      current.start = first_start_time[current.pid];
+      current.start = first_start_time[pid];
       current.end = current_time;
       current.turnaround_time = current.end - current.arrival;
       current.waiting_time = current.turnaround_time - current.burst_time;
@@ -171,6 +185,10 @@ void round_robin(std::vector<Process> processes, int quantum) {
       total_turnaround += current.turnaround_time;
       total_waiting += current.waiting_time;
       result.push_back(current);
+      completed++;
+
+      for (int new_pid : during_slice) queue.push(new_pid);
+      for (int new_pid : at_slice_end) queue.push(new_pid);
     }
   }
 
@@ -192,45 +210,46 @@ void round_robin(std::vector<Process> processes, int quantum) {
 }
 
 void priority_scheduling(std::vector<Process> processes) {
-  std::vector<Process> ready;
   std::vector<Process> result;
+  std::vector<bool> done(processes.size(), false);
   int current_time = 0;
   size_t completed = 0;
   float total_waiting = 0, total_turnaround = 0;
 
-  // Main scheduling loop
   while (completed < processes.size()) {
-    // Move all processes that have arrived to the ready queue
-    for (auto it = processes.begin(); it != processes.end();) {
-      if (it->arrival <= current_time) {
-        ready.push_back(*it);
-        it = processes.erase(it);
-      } else {
-        ++it;
+    // Find ready processes (they reached current_time)
+    std::vector<size_t> ready_indices;
+    for (size_t i = 0; i < processes.size(); ++i) {
+      if (!done[i] && processes[i].arrival <= current_time) {
+        ready_indices.push_back(i);
       }
     }
 
-    // If ready queue is not empty, pick process with highest priority
-    if (!ready.empty()) {
-      auto it = std::min_element(ready.begin(), ready.end(), [](const Process& a, const Process& b) {
-        return a.priority < b.priority;
-      });
+    if (!ready_indices.empty()) {
+      // Choose the index with the highest priority (lowest number)
+      size_t selected_idx = ready_indices[0];
+      for (size_t idx : ready_indices) {
+        if (processes[idx].priority < processes[selected_idx].priority ||
+           (processes[idx].priority == processes[selected_idx].priority &&
+            processes[idx].arrival < processes[selected_idx].arrival)) {
+          selected_idx = idx;
+        }
+      }
 
-      Process p = *it;
-      ready.erase(it);
-
+      Process& p = processes[selected_idx];
       p.start = current_time;
       p.end = p.start + p.burst_time;
-      p.turnaround_time = p.end - p.arrival;
       p.waiting_time = p.start - p.arrival;
+      p.turnaround_time = p.end - p.arrival;
 
       current_time = p.end;
       result.push_back(p);
+      done[selected_idx] = true;
+      completed++;
       total_waiting += p.waiting_time;
       total_turnaround += p.turnaround_time;
-      completed++;
     } else {
-      // CPU is idle
+      // There are no processes ready, advance time
       current_time++;
     }
   }
