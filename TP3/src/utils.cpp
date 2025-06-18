@@ -30,7 +30,7 @@ void parseInput(const std::string& input, std::vector<Process>& processes, std::
 
   // Parse burst times
   std::vector<int> burst_times = parseValues(parts[1]);
-  if (burst_times.size() != n) {
+  if (burst_times.size() != static_cast<size_t>(n)) {
     std::cerr << "Error: Incorrect number of burst times.\n";
     return;
   }
@@ -39,13 +39,13 @@ void parseInput(const std::string& input, std::vector<Process>& processes, std::
   std::vector<int> priorities = (parts[2] == "0")
     ? std::vector<int>(n, 0)
     : parseValues(parts[2]);
-  if (priorities.size() < n) priorities.resize(n, 0);
+  if (priorities.size() < static_cast<size_t>(n)) priorities.resize(n, 0);
 
   // Parse arrivals (pad with 0 if missing)
   std::vector<int> arrivals = (parts[3] == "0")
     ? std::vector<int>(n, 0) : parseValues(parts[3]);
   if (arrivals.size() == 1) arrivals = std::vector<int>(n, arrivals[0]);
-  if (arrivals.size() < n) arrivals.resize(n, 0);
+  if (arrivals.size() < static_cast<size_t>(n)) arrivals.resize(n, 0);
 
   // Parse and clean algorithm name
   algorithm = parts[4];
