@@ -270,3 +270,124 @@ void priority_scheduling(std::vector<Process> processes) {
   std::cout << "Average Turnaround Time: " << total_turnaround / result.size() << std::endl;
   std::cout << "Throughput: " << throughput << " processes/time unit\n" << std::endl;
 }
+
+void multilevel_feedback_queue(std::vector<Process> processes)
+{
+  std::map<int, int> remaining_time;
+  std::map<int, int> first_start;
+  std::vector<Process> result;
+  size_t completed = 0;
+  int current_time = 0;
+  size_t index = 0;
+  float total_waiting = 0, total_turnaround = 0;
+
+  // Ordenar por tiempo de llegada
+  std::sort(processes.begin(), processes.end(), [](const Process &a, const Process &b)
+            { return a.arrival < b.arrival; });
+
+  for (const auto &p : processes)
+  {
+    remaining_time[p.pid] = p.burst_time;
+  }
+
+  std::queue<Process> q0, q1, q2;
+
+  std::cout << "\n--- Multilevel Feedback Queue ---\n";
+
+  while (completed < processes.size())
+  {
+    // Agregar procesos que llegan al tiempo actual a q0
+    while (index < processes.size() && processes[index].arrival <= current_time)
+    {
+      std::cout << ">> Proceso P" << processes[index].pid << " llegó al tiempo " << current_time << " y se inserta en Q0\n";
+      q0.push(processes[index]);
+      index++;
+    }
+
+    // Función lambda para ejecutar una cola con su quantum
+    auto execute_queue = [&](std::queue<Process> &q, int quantum, bool downgrade) -> bool
+    {
+      if (q.empty())
+        return false;
+      Process p = q.front();
+      q.pop();
+
+      if (first_start.count(p.pid) == 0)
+        first_start[p.pid] = current_time;
+
+      int exec_time = std::min(quantum, remaining_time[p.pid]);
+      std::cout << ">> Ejecutando P" << p.pid << " en Q" << (quantum == 2 ? 0 : (quantum == 4 ? 1 : 2))
+                << " por " << exec_time << " unidades de tiempo (restante: " << remaining_time[p.pid] << ")\n";
+
+      current_time += exec_time;
+      remaining_time[p.pid] -= exec_time;
+
+      // Insertar procesos que llegaron durante esta ejecución
+      while (index < processes.size() && processes[index].arrival <= current_time)
+      {
+        std::cout << ">> Proceso P" << processes[index].pid << " llegó al tiempo " << current_time << " y se inserta en Q0\n";
+        q0.push(processes[index]);
+        index++;
+      }
+
+      if (remaining_time[p.pid] > 0)
+      {
+        if (downgrade)
+        {
+          std::cout << ">> P" << p.pid << " no terminó, bajando de nivel...\n";
+          if (quantum == 2)
+            q1.push(p);
+          else
+            q2.push(p);
+        }
+        else
+        {
+          q.push(p); // FCFS, no baja más
+        }
+      }
+      else
+      {
+        p.start = first_start[p.pid];
+        p.end = current_time;
+        p.waiting_time = p.end - p.arrival - p.burst_time;
+        p.turnaround_time = p.end - p.arrival;
+
+        total_waiting += p.waiting_time;
+        total_turnaround += p.turnaround_time;
+        result.push_back(p);
+        std::cout << ">> P" << p.pid << " completado.\n";
+        completed++;
+      }
+
+      return true;
+    };
+
+    // Intentar ejecutar colas por orden de prioridad
+    if (execute_queue(q0, 2, true))
+      continue;
+    if (execute_queue(q1, 4, true))
+      continue;
+    if (execute_queue(q2, 1000000, false))
+      continue;
+
+    // Si no hay nada que ejecutar, avanzar tiempo
+    current_time++;
+  }
+
+  // Imprimir resultados
+  for (const auto &p : result)
+  {
+    std::cout << "P" << p.pid
+              << " -> Start: " << p.start
+              << ", End: " << p.end
+              << ", Waiting Time: " << p.waiting_time
+              << ", Turnaround Time: " << p.turnaround_time
+              << "\n";
+  }
+
+  float throughput = static_cast<float>(result.size()) / current_time;
+  std::cout << "\nAverage Waiting Time: " << total_waiting / result.size() << std::endl;
+  std::cout << "Average Turnaround Time: " << total_turnaround / result.size() << std::endl;
+  std::cout << "Throughput: " << throughput << " processes/time unit\n"
+            << std::endl;
+}
