@@ -34,37 +34,44 @@ int main() {
     round_robin(processes, 2);
   } else if (algorithm == "Priority") {
     priority_scheduling(processes);
+  } else if (algorithm == "MLFQ") {
+    multilevel_feedback_queue(processes);
   } else if (algorithm == "all") {
     // 1. Show detailed execution
     std::vector<Process> fcfs_p = processes;
     std::vector<Process> sjf_p = processes;
     std::vector<Process> rr_p = processes;
     std::vector<Process> prio_p = processes;
+    std::vector<Process> mlfq_p = processes;
 
     fcfs(fcfs_p);
     sjf(sjf_p);
     round_robin(rr_p, 2);
     priority_scheduling(prio_p);
+    multilevel_feedback_queue(mlfq_p);
 
     // 2. Make new copies to extract metrics while keeping the output clean
     std::vector<Process> m_fcfs = processes;
     std::vector<Process> m_sjf = processes;
     std::vector<Process> m_rr = processes;
     std::vector<Process> m_prio = processes;
+    std::vector<Process> m_mlfq = processes;
 
     Metrics fcfs_metrics = captureAndParse(fcfs, m_fcfs);
     Metrics sjf_metrics = captureAndParse(sjf, m_sjf);
     Metrics rr_metrics = captureAndParse([](std::vector<Process>& p) { round_robin(p, 2); }, m_rr);
     Metrics prio_metrics = captureAndParse(priority_scheduling, m_prio);
+    Metrics mlfq_metrics = captureAndParse(multilevel_feedback_queue, m_mlfq);
 
     // 3. Show final summary
     std::cout << "\n--- Summary ---\n";
-    std::cout << "Algorithm     | Avg WT | Avg TT\n";
-    std::cout << "--------------|--------|--------\n";
-    std::cout << "FCFS          | " << fcfs_metrics.avg_waiting_time << "    | " << fcfs_metrics.avg_turnaround_time << "\n";
-    std::cout << "SJF           | " << sjf_metrics.avg_waiting_time << "    | " << sjf_metrics.avg_turnaround_time << "\n";
-    std::cout << "Round Robin   | " << rr_metrics.avg_waiting_time << "    | " << rr_metrics.avg_turnaround_time << "\n";
-    std::cout << "Priority      | " << prio_metrics.avg_waiting_time << "    | " << prio_metrics.avg_turnaround_time << "\n";
+    std::cout << "Algorithm       | Avg WT | Avg TT\n";
+    std::cout << "----------------|--------|--------\n";
+    std::cout << "FCFS            | " << fcfs_metrics.avg_waiting_time << "    | " << fcfs_metrics.avg_turnaround_time << "\n";
+    std::cout << "SJF             | " << sjf_metrics.avg_waiting_time << "    | " << sjf_metrics.avg_turnaround_time << "\n";
+    std::cout << "Round Robin     | " << rr_metrics.avg_waiting_time << "    | " << rr_metrics.avg_turnaround_time << "\n";
+    std::cout << "Priority        | " << prio_metrics.avg_waiting_time << "    | " << prio_metrics.avg_turnaround_time << "\n";
+    std::cout << "Multilevel FQ   | " << mlfq_metrics.avg_waiting_time << "    | " << mlfq_metrics.avg_turnaround_time << "\n";
   } else {
     std::cerr << "Unrecognized algorithm: " << algorithm << std::endl;
   }
