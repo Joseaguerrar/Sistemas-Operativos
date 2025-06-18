@@ -62,3 +62,14 @@ void round_robin(std::vector<Process> processes, int quantum = 2);
  * @param processes Vector of processes to schedule.
  */
 void priority_scheduling(std::vector<Process> processes);
+
+/**
+ * @brief Simula el algoritmo Multilevel Feedback Queue con tres niveles.
+ *
+ * Nivel 0: Round Robin (Q = 2)
+ * Nivel 1: Round Robin (Q = 4)
+ * Nivel 2: FCFS
+ *
+ * @param processes Vector de procesos a planificar.
+ */
+void multilevel_feedback_queue(std::vector<Process> processes);
