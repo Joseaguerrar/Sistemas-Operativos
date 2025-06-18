@@ -35,16 +35,36 @@ int main() {
   } else if (algorithm == "Priority") {
     priority_scheduling(processes);
   } else if (algorithm == "all") {
-    // Make copies to preserve original input for each algorithm
-    std::vector<Process> copy1 = processes;
-    std::vector<Process> copy2 = processes;
-    std::vector<Process> copy3 = processes;
-    std::vector<Process> copy4 = processes;
+    // 1. Show detailed execution
+    std::vector<Process> fcfs_p = processes;
+    std::vector<Process> sjf_p = processes;
+    std::vector<Process> rr_p = processes;
+    std::vector<Process> prio_p = processes;
 
-    fcfs(copy1);
-    sjf(copy2);
-    round_robin(copy3, 2);
-    priority_scheduling(copy4);
+    fcfs(fcfs_p);
+    sjf(sjf_p);
+    round_robin(rr_p, 2);
+    priority_scheduling(prio_p);
+
+    // 2. Make new copies to extract metrics while keeping the output clean
+    std::vector<Process> m_fcfs = processes;
+    std::vector<Process> m_sjf = processes;
+    std::vector<Process> m_rr = processes;
+    std::vector<Process> m_prio = processes;
+
+    Metrics fcfs_metrics = captureAndParse(fcfs, m_fcfs);
+    Metrics sjf_metrics = captureAndParse(sjf, m_sjf);
+    Metrics rr_metrics = captureAndParse([](std::vector<Process>& p) { round_robin(p, 2); }, m_rr);
+    Metrics prio_metrics = captureAndParse(priority_scheduling, m_prio);
+
+    // 3. Show final summary
+    std::cout << "\n--- Summary ---\n";
+    std::cout << "Algorithm     | Avg WT | Avg TT\n";
+    std::cout << "--------------|--------|--------\n";
+    std::cout << "FCFS          | " << fcfs_metrics.avg_waiting_time << "    | " << fcfs_metrics.avg_turnaround_time << "\n";
+    std::cout << "SJF           | " << sjf_metrics.avg_waiting_time << "    | " << sjf_metrics.avg_turnaround_time << "\n";
+    std::cout << "Round Robin   | " << rr_metrics.avg_waiting_time << "    | " << rr_metrics.avg_turnaround_time << "\n";
+    std::cout << "Priority      | " << prio_metrics.avg_waiting_time << "    | " << prio_metrics.avg_turnaround_time << "\n";
   } else {
     std::cerr << "Unrecognized algorithm: " << algorithm << std::endl;
   }

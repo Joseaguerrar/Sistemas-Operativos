@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <queue>
+#include <regex>
 #include <map>
 
 /**
@@ -19,6 +20,18 @@ struct Process {
   int end = 0;              // Time at which the process finishes execution.
   int waiting_time = 0;     // Total waiting time of the process.
   int turnaround_time = 0;  // Turnaround time = end - arrival.
+};
+
+/**
+ * @struct Metrics
+ * @brief Holds average metrics calculated from a scheduling algorithm.
+ *
+ * This struct stores the average waiting time and average turnaround time
+ * produced by a CPU scheduling algorithm.
+ */
+struct Metrics {
+  double avg_waiting_time;
+  double avg_turnaround_time;
 };
 
 /**

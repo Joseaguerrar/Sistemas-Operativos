@@ -39,7 +39,7 @@ void fcfs(std::vector<Process>& processes) {
       << std::endl;
   }
 
-  std::cout << "Average Waiting Time: " << total_waiting / processes.size() << std::endl;
+  std::cout << "\nAverage Waiting Time: " << total_waiting / processes.size() << std::endl;
   std::cout << "Average Turnaround Time: " << total_turnaround / processes.size() << std::endl;
   std::cout << "Throughput: " << throughput << " processes/time unit\n" << std::endl;
 }
@@ -105,7 +105,7 @@ void sjf(std::vector<Process> processes) {
   }
 
   float throughput = static_cast<float>(result.size()) / current_time;
-  std::cout << "Average Waiting Time: " << total_waiting / result.size() << std::endl;
+  std::cout << "\nAverage Waiting Time: " << total_waiting / result.size() << std::endl;
   std::cout << "Average Turnaround Time: " << total_turnaround / result.size() << std::endl;
   std::cout << "Throughput: " << throughput << " processes/time unit\n" << std::endl;
 }
@@ -204,7 +204,7 @@ void round_robin(std::vector<Process> processes, int quantum) {
   }
 
   float throughput = static_cast<float>(result.size()) / current_time;
-  std::cout << "Average Waiting Time: " << total_waiting / result.size() << std::endl;
+  std::cout << "\nAverage Waiting Time: " << total_waiting / result.size() << std::endl;
   std::cout << "Average Turnaround Time: " << total_turnaround / result.size() << std::endl;
   std::cout << "Throughput: " << throughput << " processes/time unit\n" << std::endl;
 }
@@ -266,7 +266,7 @@ void priority_scheduling(std::vector<Process> processes) {
   }
 
   float throughput = static_cast<float>(result.size()) / current_time;
-  std::cout << "Average Waiting Time: " << total_waiting / result.size() << std::endl;
+  std::cout << "\nAverage Waiting Time: " << total_waiting / result.size() << std::endl;
   std::cout << "Average Turnaround Time: " << total_turnaround / result.size() << std::endl;
   std::cout << "Throughput: " << throughput << " processes/time unit\n" << std::endl;
 }
